@@ -37,6 +37,8 @@ Material:
     m_Floats:
     - Power: 4.05
     - Smoothness: 0.71
+    - _QueueControl: 0
+    - _QueueOffset: 0
     m_Colors:
     - EyeRim: {r: 20.729435, g: 0, b: 21.361254, a: 0}
   m_BuildTextureStacks: []
