@@ -30,9 +30,19 @@ public class DesktopManager : MonoBehaviour
         }
     }
 
-    public GameObject ScreenPanel;
-    public GameObject DesktopPanel;
-    public GameObject LockScreenPanel; 
+
+    [Header(" ")]
+    public GameObject ScreenPanel; 
+    [Header("Desktop Panel Objects")]
+    [Header("-------------------------------------------------------------")]
+    public GameObject DesktopPanel; 
+    [Header("Lock Screen Panel Objects")]
+    [Header("-------------------------------------------------------------")]
+    public GameObject LockScreenPanel;
+    public TMP_Text WrongPassTmpText;
+    public TMP_InputField passwordInputField; 
+    [Header("Taskbar Panel Objects")]
+    [Header("-------------------------------------------------------------")]
     public GameObject TaskBarPanel;
 
     public enum ScreenState
@@ -43,10 +53,8 @@ public class DesktopManager : MonoBehaviour
     }
     public ScreenState CurrentState = ScreenState.LockScreen;
 
-
-    private TMP_InputField passwordInputField;
-    private string password = "1234";
-    private bool isLocked = false; 
+  
+    private string password = "1234"; 
     private string typedPassword = "1234";
 
     // Start is called before the first frame update
@@ -58,35 +66,53 @@ public class DesktopManager : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if(CurrentState == ScreenState.LockScreen)
         {
             if (InputManager.Instance.OK)
                 OnClicked_LockScreenOk();
         }
+        if(CurrentState == ScreenState.Desktop){
+            if (InputManager.Instance.lockKey)
+            {
+                LockPc();
+                InputManager.Instance.lockKey = false;
+            }
+        }
     }
 
     #region ActionsMethods
     public void OnClicked_LockScreenOk()
     {
-        Debug.Log("LockScreenOk");
-        typedPassword = LockScreenPanel.GetComponentInChildren<TMP_InputField>().text.Trim();
-        if (String.Equals(password, typedPassword) )
+        Debug.Log("LockScreenOk"); 
+        typedPassword = passwordInputField.text;
+        if (String.Equals(password, typedPassword))
+        {
+            WrongPassTmpText.gameObject.SetActive(false); 
             UnlockPc();
+        }
+           
         else
-            passwordInputField.text = "";
+        {
+            passwordInputField.text = "";  
+            WrongPassTmpText.gameObject.SetActive(true);
+
+        }
+            
     }
     #endregion
 
     #region PrivateMethods
     private void UnlockPc()
     {
+        passwordInputField.text="";
         LockScreenPanel.SetActive(false);
         ScreenPanel.SetActive(true);
         DesktopPanel.SetActive(true);
         TaskBarPanel.SetActive(true);
         CurrentState = ScreenState.Desktop;
+        WrongPassTmpText.gameObject.SetActive(false); 
     }
     private void LockPc()
     {
@@ -96,6 +122,7 @@ public class DesktopManager : MonoBehaviour
         TaskBarPanel.SetActive(false);
 
         CurrentState = ScreenState.LockScreen;
+        WrongPassTmpText.gameObject.SetActive(false); 
     }
     #endregion                                              
 }
