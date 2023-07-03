@@ -46,19 +46,25 @@ public class TaskBarControl : MonoBehaviour
     }
     public void NewProgramOpen(Sprite SourceImage, GameObject ProgramObject)
     {
-
-        taskBarIconsDict.Add(taskBarIcons[currentTaskBarIndex], ProgramObject);
-        taskBarIcons[currentTaskBarIndex].transform.GetChild(0).GetComponent<Image>().sprite = SourceImage;
-        taskBarIcons[currentTaskBarIndex].SetActive(true);
-        currentTaskBarIndex++;
-        foreach (KeyValuePair<GameObject, GameObject> entry in taskBarIconsDict)
+        if (taskBarIconsDict.ContainsValue(ProgramObject))
         {
-            Debug.Log(entry.Key + " " + entry.Value);
+            GameObject newProg = Instantiate(ProgramObject,DesktopManager.Instance.mainCanvas.pixelRect.size/2,Quaternion.identity,ProgramObject.transform.parent);
+            newProg.GetComponent<RectTransform>().offsetMin = new Vector2(newProg.GetComponent<RectTransform>().offsetMin.x, 0);
+            newProg.GetComponent<RectTransform>().offsetMax = new Vector2(newProg.GetComponent<RectTransform>().offsetMax.x, 0);
+            taskBarIconsDict.Add(taskBarIcons[currentTaskBarIndex], newProg);
+            taskBarIcons[currentTaskBarIndex].transform.GetChild(0).GetComponent<Image>().sprite = SourceImage;
+            taskBarIcons[currentTaskBarIndex].SetActive(true);
+        }else
+        {
+            taskBarIconsDict.Add(taskBarIcons[currentTaskBarIndex], ProgramObject);
+            taskBarIcons[currentTaskBarIndex].transform.GetChild(0).GetComponent<Image>().sprite = SourceImage;
+            taskBarIcons[currentTaskBarIndex].SetActive(true);
+            currentTaskBarIndex++;
         }
     }
     public void ProgramClosed(GameObject ProgramObject)
     {
-       
+
         if (taskBarIconsDict.ContainsValue(ProgramObject))
         {
             ProgramObject.SetActive(false);
@@ -70,8 +76,8 @@ public class TaskBarControl : MonoBehaviour
             {
                 if (entry.Value == ProgramObject)
                 {
-                   
-                    while (index < count-1)
+
+                    while (index < count - 1)
                     {
                         taskBarIconsDict[taskBarIcons[index]] = taskBarIconsDict[taskBarIcons[index + 1]];
                         taskBarIcons[index].transform.GetChild(0).GetComponent<Image>().sprite = taskBarIcons[index + 1].transform.GetChild(0).GetComponent<Image>().sprite;
@@ -100,7 +106,7 @@ public class TaskBarControl : MonoBehaviour
     public void MinimizeProgram(GameObject ProgramObject)
     {
         ProgramObject.SetActive(false);
-       
+
 
     }
 
