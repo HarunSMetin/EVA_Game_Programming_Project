@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DesktopManager : MonoBehaviour
 {
@@ -30,12 +32,17 @@ public class DesktopManager : MonoBehaviour
         }
     }
 
+    public Canvas mainCanvas;
 
     [Header(" ")]
     public GameObject ScreenPanel; 
     [Header("Desktop Panel Objects")]
     [Header("-------------------------------------------------------------")]
     public GameObject DesktopPanel; 
+    public GameObject[] DesktopIcons;
+    public GameObject[] DesktopPrograms;
+
+    private Dictionary<GameObject, GameObject> DesktopIconsDict = new Dictionary<GameObject, GameObject>();
     [Header("Lock Screen Panel Objects")]
     [Header("-------------------------------------------------------------")]
     public GameObject LockScreenPanel;
@@ -63,6 +70,12 @@ public class DesktopManager : MonoBehaviour
         LockPc();
         passwordInputField = LockScreenPanel.GetComponentInChildren<TMP_InputField>();
         typedPassword = passwordInputField.text;
+
+        if(DesktopIcons.Length == DesktopPrograms.Length){
+            for (int i = 0; i < DesktopIcons.Length; i++)
+                DesktopIconsDict.Add(DesktopIcons[i], DesktopPrograms[i]);
+
+        }
     }
 
     // Update is called once per frame
@@ -100,6 +113,28 @@ public class DesktopManager : MonoBehaviour
 
         }
             
+    }
+    public void OnClicked_CloseProgram(GameObject Program)
+    {
+        Debug.Log("CloseProgram");
+        TaskBarControl.Instance.ProgramClosed(Program);
+    }
+    public void OnClicked_MinimizeProgram(GameObject Program)
+    {
+        Debug.Log("MinimizeProgram");
+        TaskBarControl.Instance.MinimizeProgram(Program);
+    }
+    public void OnClicked_MaximizeProgram(GameObject Program)
+    {
+        Debug.Log("MaximizeProgram");
+        TaskBarControl.Instance.MaximizeProgram (Program);
+    } 
+    public void OnClicked_OpenProgram(GameObject button)
+    {
+       DesktopIconsDict[button].SetActive(true);
+       TaskBarControl.Instance.NewProgramOpen(button.transform.GetChild(0).GetComponent<Image>().sprite, DesktopIconsDict[button]);
+       CurrentState = ScreenState.Program;
+        
     }
     #endregion
 
