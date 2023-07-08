@@ -35,19 +35,20 @@ public class DesktopManager : MonoBehaviour
     public Canvas mainCanvas;
 
     [Header(" ")]
-    public GameObject ScreenPanel; 
+    public GameObject ScreenPanel;
     [Header("Desktop Panel Objects")]
     [Header("-------------------------------------------------------------")]
-    public GameObject DesktopPanel; 
+    public GameObject DesktopPanel;
     public GameObject[] DesktopIcons;
     public GameObject[] DesktopPrograms;
+    public GameObject Programs;
 
-    private Dictionary<GameObject, GameObject> DesktopIconsDict = new Dictionary<GameObject, GameObject>();
+    public Dictionary<GameObject, GameObject> DesktopIconsDict = new Dictionary<GameObject, GameObject>();  //DesktopIconsDict.Add(DesktopIcons[i], DesktopPrograms[i]);
     [Header("Lock Screen Panel Objects")]
     [Header("-------------------------------------------------------------")]
     public GameObject LockScreenPanel;
     public TMP_Text WrongPassTmpText;
-    public TMP_InputField passwordInputField; 
+    public TMP_InputField passwordInputField;
     [Header("Taskbar Panel Objects")]
     [Header("-------------------------------------------------------------")]
     public GameObject TaskBarPanel;
@@ -59,19 +60,21 @@ public class DesktopManager : MonoBehaviour
         Program
     }
     public ScreenState CurrentState = ScreenState.LockScreen;
+    public ScreenState OldState = ScreenState.Desktop;
 
-  
-    private string password = "1234"; 
+
+    private string password = "1234";
     private string typedPassword = "1234";
 
     // Start is called before the first frame update
     void Start()
     {
-        LockPc();
+        LockPc(false);
         passwordInputField = LockScreenPanel.GetComponentInChildren<TMP_InputField>();
         typedPassword = passwordInputField.text;
 
-        if(DesktopIcons.Length == DesktopPrograms.Length){
+        if (DesktopIcons.Length == DesktopPrograms.Length)
+        {
             for (int i = 0; i < DesktopIcons.Length; i++)
                 DesktopIconsDict.Add(DesktopIcons[i], DesktopPrograms[i]);
 
@@ -81,83 +84,110 @@ public class DesktopManager : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if(CurrentState == ScreenState.LockScreen)
+        switch (CurrentState)
         {
-            if (InputManager.Instance.OK)
-                OnClicked_LockScreenOk();
-        }
-        if(CurrentState == ScreenState.Desktop){
-            if (InputManager.Instance.lockKey)
-            {
-                LockPc();
-                InputManager.Instance.lockKey = false;
-            }
+            case ScreenState.LockScreen:
+                if (InputManager.Instance.OK)
+                    OnClicked_LockScreenOk();
+                break;
+            case ScreenState.Desktop:
+                if (InputManager.Instance.lockKey)
+                {
+                    LockPc();
+                    InputManager.Instance.lockKey = false;
+                }
+                break;
+            case ScreenState.Program:
+                if (InputManager.Instance.lockKey)
+                {
+                    LockPc();
+                    InputManager.Instance.lockKey = false;
+                }
+                break;
         }
     }
 
     #region ActionsMethods
     public void OnClicked_LockScreenOk()
     {
-        Debug.Log("LockScreenOk"); 
         typedPassword = passwordInputField.text;
         if (String.Equals(password, typedPassword))
         {
-            WrongPassTmpText.gameObject.SetActive(false); 
+            WrongPassTmpText.gameObject.SetActive(false);
             UnlockPc();
         }
-           
+
         else
         {
-            passwordInputField.text = "";  
+            passwordInputField.text = "";
             WrongPassTmpText.gameObject.SetActive(true);
 
         }
-            
+
     }
     public void OnClicked_CloseProgram(GameObject Program)
     {
+        OldState = CurrentState;
+        CurrentState = ScreenState.Desktop;
         Debug.Log("CloseProgram");
         TaskBarControl.Instance.ProgramClosed(Program);
     }
     public void OnClicked_MinimizeProgram(GameObject Program)
     {
         Debug.Log("MinimizeProgram");
+
+        OldState = CurrentState;
+        CurrentState = ScreenState.Desktop;
         TaskBarControl.Instance.MinimizeProgram(Program);
     }
     public void OnClicked_MaximizeProgram(GameObject Program)
     {
-        Debug.Log("MaximizeProgram");
-        TaskBarControl.Instance.MaximizeProgram (Program);
-    } 
+        OldState = CurrentState;
+        CurrentState = ScreenState.Program;
+        TaskBarControl.Instance.MaximizeProgram(Program);
+    }
     public void OnClicked_OpenProgram(GameObject button)
     {
-       DesktopIconsDict[button].SetActive(true);
-       TaskBarControl.Instance.NewProgramOpen(button.transform.GetChild(0).GetComponent<Image>().sprite, DesktopIconsDict[button]);
-       CurrentState = ScreenState.Program;
-        
+        Debug.Log("1: " + OldState.ToString() + ' ' + CurrentState.ToString());
+        if (CurrentState == ScreenState.LockScreen)
+        { 
+            OldState = ScreenState.Program; 
+            Debug.Log("2: " + OldState.ToString() + ' ' + CurrentState.ToString());
+        }
+        else
+        {
+            OldState = CurrentState;
+            Debug.Log("3: " + OldState.ToString() + ' ' + CurrentState.ToString());
+            CurrentState = ScreenState.Program;
+            Debug.Log("4: " + OldState.ToString() + ' ' + CurrentState.ToString());
+        }
+        DesktopIconsDict[button].SetActive(true);
+        TaskBarControl.Instance.NewProgramOpen(button.transform.GetChild(0).GetComponent<Image>().sprite, DesktopIconsDict[button]);
     }
     #endregion
 
     #region PrivateMethods
     private void UnlockPc()
     {
-        passwordInputField.text="";
+        passwordInputField.text = "";
         LockScreenPanel.SetActive(false);
         ScreenPanel.SetActive(true);
         DesktopPanel.SetActive(true);
         TaskBarPanel.SetActive(true);
-        CurrentState = ScreenState.Desktop;
-        WrongPassTmpText.gameObject.SetActive(false); 
+        CurrentState = OldState;
+        OldState = ScreenState.LockScreen;
+        WrongPassTmpText.gameObject.SetActive(false);
     }
-    private void LockPc()
+    private void LockPc(bool justForStart=true)
     {
-        LockScreenPanel.SetActive(true); 
+        LockScreenPanel.SetActive(true);
         ScreenPanel.SetActive(true);
         DesktopPanel.SetActive(false);
         TaskBarPanel.SetActive(false);
 
+        if(justForStart)OldState = CurrentState;
         CurrentState = ScreenState.LockScreen;
-        WrongPassTmpText.gameObject.SetActive(false); 
+        WrongPassTmpText.gameObject.SetActive(false);
     }
     #endregion                                              
 }
