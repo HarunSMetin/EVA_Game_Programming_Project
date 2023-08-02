@@ -24,9 +24,13 @@ public class SUPERCharacterAIO : MonoBehaviour{
     #region Variables
 
     public bool controllerPaused = false;
+        public float interactionDistance = 2f; // Karakterin kutuya olan etkileþim mesafesi
+        private bool isMoving = false;
+        private GameObject interactableCube;
+        private Vector3 initialPosition;
 
     #region Camera Settings
-    [Header("Camera Settings")]
+        [Header("Camera Settings")]
     //
     //Public
     //
@@ -575,8 +579,29 @@ public class SUPERCharacterAIO : MonoBehaviour{
         }
         #region Animation
         UpdateAnimationTriggers(controllerPaused);
-        #endregion
-    }
+            #endregion
+
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                if (!isMoving && interactableCube != null)
+                {
+                    isMoving = true;
+                    initialPosition = interactableCube.transform.position;
+                }
+                else
+                {
+                    isMoving = false;
+                }
+            }
+
+            if (isMoving && interactableCube != null)
+            {
+                Vector3 mousePosition = Input.mousePosition;
+                mousePosition.z = Camera.main.WorldToScreenPoint(interactableCube.transform.position).z;
+                Vector3 targetPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+                interactableCube.transform.position = new Vector3(targetPosition.x, targetPosition.y, initialPosition.z);
+            }
+        }
     void FixedUpdate() {
         if(!controllerPaused){
 
@@ -604,11 +629,24 @@ public class SUPERCharacterAIO : MonoBehaviour{
     private void OnTriggerEnter(Collider other){
         #region Collectables
         other.GetComponent<ICollectable>()?.Collect();
-        #endregion
+            #endregion
+
+        if (other.CompareTag("InteractableCube"))
+        {
+            interactableCube = other.gameObject;
+        }
+     }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("InteractableCube"))
+        {
+            interactableCube = null;
+        }
     }
- 
+
     #region Camera Functions
-    void RotateView(Vector2 yawPitchInput, float inputSensitivity, float cameraWeight){
+        void RotateView(Vector2 yawPitchInput, float inputSensitivity, float cameraWeight){
         
         switch (viewInputMethods){
             
