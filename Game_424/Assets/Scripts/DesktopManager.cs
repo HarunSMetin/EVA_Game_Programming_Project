@@ -108,6 +108,11 @@ public class DesktopManager : MonoBehaviour
     }
 
     #region ActionsMethods
+    public void OnClicked_ForgotPassword()
+    {
+        string message = "You can't remember your password? \r\nHere is a tip for you: \r\nYour password is most common 4 digit pass in the world";
+        ChatBoxManager.Instance.AIChatBoxTextUpdate(message, displayTime: 7f ,startDelay: 0f); 
+    }
     public void OnClicked_LockScreenOk()
     {
         typedPassword = passwordInputField.text;
