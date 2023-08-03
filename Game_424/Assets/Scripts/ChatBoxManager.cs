@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro; 
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ChatBoxManager : MonoBehaviour
 {
@@ -29,7 +30,7 @@ public class ChatBoxManager : MonoBehaviour
     }
 
     public GameObject AIPanel;
-    public GameObject AILogo;
+    public Button AILogo;
     public TMP_Text AIChatBoxText;
     
     private bool available = true;
@@ -41,7 +42,15 @@ public class ChatBoxManager : MonoBehaviour
         AIChatBoxText.text = text;
         AIPanel.SetActive(true); 
         available = true;
-    } 
+    }
+    public void AIChatBoxTextUpdate(string text, float startDelay = 1f)
+    {
+        if (!available)
+            return;
+        available = false;
+        AIChatBoxText.text = text;
+        StartCoroutine(DisableAIPanel(startDelay ));
+    }
     public void AIChatBoxTextUpdate(string text, float displayTime, float startDelay = 0f)
     {
         if(!available)
@@ -49,7 +58,13 @@ public class ChatBoxManager : MonoBehaviour
         available = false;
         AIChatBoxText.text = text;
         StartCoroutine(DisableAIPanel( startDelay, displayTime));
-    } 
+    }
+    IEnumerator DisableAIPanel(float startDelay )
+    {
+        yield return new WaitForSeconds(startDelay);
+        AIPanel.SetActive(true); 
+        available = true;
+    }
     IEnumerator DisableAIPanel(float startDelay,float displayTime)
     {
         yield return new WaitForSeconds(startDelay);  

@@ -5,7 +5,9 @@ using System.Security.Cryptography.X509Certificates;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
+using URPGlitch.Runtime.DigitalGlitch;
 
 public class DesktopManager : MonoBehaviour
 {
@@ -41,8 +43,10 @@ public class DesktopManager : MonoBehaviour
     public string UserName = "User";
     public float SoundVolume =0.5f;
     public int Difficulty = 0;
+    public int level = 0;
 
-
+    [Header(" ")]
+    public Volume GlitchVolume;
     public Canvas mainCanvas;
 
     [Header(" ")]
@@ -199,9 +203,9 @@ public class DesktopManager : MonoBehaviour
     #endregion
 
     public void ExitGame()
-    {
+    { 
+        SaveSettings();
 
-        //TODO: save any game data here
         if (Application.isEditor)
         {
             UnityEditor.EditorApplication.isPlaying = false;
@@ -252,12 +256,17 @@ public class DesktopManager : MonoBehaviour
 
         if (PlayerPrefs.HasKey("UserName"))
         {
-            UserName = PlayerPrefs.GetString("UserName"); 
+            UserName = PlayerPrefs.GetString("UserName");
         }
+        if (PlayerPrefs.HasKey("Level"))
+        {
+            level = PlayerPrefs.GetInt("Level"); 
+        } 
         SoundBarSlider.value = SoundVolume;
         DifficultyDropdown.value = Difficulty;
         UserNameTMP.text = UserName; 
         UserNameTmpText.text = UserName;
+        LevelManager.Instance.CurrentLevel = (LevelManager.Levels)level;
 
     }
     public void SaveSettings()
@@ -266,10 +275,18 @@ public class DesktopManager : MonoBehaviour
         UserName=UserNameTMP.text;
         SoundVolume = SoundBarSlider.value;
         Difficulty = DifficultyDropdown.value;
+        level = (int)LevelManager.Instance.CurrentLevel; 
         PlayerPrefs.SetFloat("SoundVolume", SoundVolume);
         PlayerPrefs.SetInt("Difficulty", Difficulty);
         PlayerPrefs.SetString("UserName", UserName);
+        PlayerPrefs.SetInt("Level", level);
+        PlayerPrefs.Save();
 
+    }
+    public void SetGlitch(float value)
+    {
+        GlitchVolume.profile.TryGet(out DigitalGlitchVolume Glitch);
+        Glitch.intensity.value = value;
     }
 
 }
