@@ -6,6 +6,10 @@ TagManager:
   tags:
   - NeuralNetwork
   - Layers
+  - Row
+  - InputLayer
+  - HiddenLayer
+  - OutputLayer
   layers:
   - Default
   - TransparentFX
