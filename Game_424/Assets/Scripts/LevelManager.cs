@@ -32,14 +32,16 @@ public class LevelManager : MonoBehaviour
     {
         Level1,
         Level2,
-        Level3,
-        Level4,
-        Level5,
+        Level3
     }
 
     public Levels CurrentLevel = Levels.Level1;
 
-    [Header("Level 1")]
+    [Header("Level Icons")]
+    public GameObject[] LevelIcons;
+
+
+    [Header("Level 1\n")]
 
     public GameObject PopUp;
     public float waitTime = 5f;
@@ -52,15 +54,19 @@ public class LevelManager : MonoBehaviour
     public GameObject mailPanel;
     public Button downloadButton;  
     public Slider downloadBar;
+    public Button SetupVirus;
 
 
 
     // Start is called before the first frame update
     void Start()
-    {
+    { 
         switch (CurrentLevel)
         {
             case Levels.Level1:
+                LevelIcons[0].SetActive(false);
+                LevelIcons[1].SetActive(false);
+                LevelIcons[2].SetActive(false);
                 if (PopUp != null)
                 {
                     PopUp.SetActive(false);
@@ -77,13 +83,15 @@ public class LevelManager : MonoBehaviour
                 });
                 break;
             case Levels.Level2:
+                LevelIcons[0].SetActive(true);
+                LevelIcons[1].SetActive(false);
+                LevelIcons[2].SetActive(false);
                 break;
             case Levels.Level3:
-                break;
-            case Levels.Level4:
-                break;
-            case Levels.Level5:
-                break;
+                LevelIcons[0].SetActive(true);
+                LevelIcons[1].SetActive(true);
+                LevelIcons[2].SetActive(false);
+                break; 
         }
     }
 
@@ -93,6 +101,7 @@ public class LevelManager : MonoBehaviour
         switch (CurrentLevel)
         {
             case Levels.Level1:
+
                 if (!flagOfFirstIntro)
                 {
                     string message = "Hi, there...\r\nWith newest Update of your OS, I have recently added your screen. \r\nAs you see, I am your AI Assistant.";
@@ -115,11 +124,7 @@ public class LevelManager : MonoBehaviour
             case Levels.Level2:
                 break;
             case Levels.Level3:
-                break;
-            case Levels.Level4:
-                break;
-            case Levels.Level5:
-                break;
+                break; 
         }
 
     }
@@ -139,7 +144,9 @@ public class LevelManager : MonoBehaviour
             time += Time.deltaTime;
             downloadBar.value = time / 5f;
             yield return null;
-        } 
-        ChatBoxManager.Instance.AIChatBoxTextUpdate("Seems like, you have just downloaded file :) \r\n \r\nClose the mail panel and see the file in desktop", displayTime: 5f, startDelay: 1f);
+        }
+
+        ChatBoxManager.Instance.AIChatBoxTextUpdate("Seems like, you have just downloaded file :) \r\n \r\nClose the mail program and see the file in desktop", displayTime: 5f, startDelay: 1f);
+        LevelIcons[0].SetActive(true);
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -31,6 +32,16 @@ public class DesktopManager : MonoBehaviour
             return instance;
         }
     }
+    public enum ScreenState
+    {
+        LockScreen,
+        Desktop,
+        Program
+    } 
+    public string UserName = "User";
+    public float SoundVolume =0.5f;
+    public int Difficulty = 0;
+
 
     public Canvas mainCanvas;
 
@@ -47,28 +58,33 @@ public class DesktopManager : MonoBehaviour
     [Header("Lock Screen Panel Objects")]
     [Header("-------------------------------------------------------------")]
     public GameObject LockScreenPanel;
+    public TMP_Text UserNameTmpText;
     public TMP_Text WrongPassTmpText;
     public TMP_InputField passwordInputField;
     [Header("Taskbar Panel Objects")]
     [Header("-------------------------------------------------------------")]
     public GameObject TaskBarPanel;
+    public GameObject StartUpPanel;
 
-    public enum ScreenState
-    {
-        LockScreen,
-        Desktop,
-        Program
-    }
+    [Header("User Preferences")]
+    public Slider SoundBarSlider;
+    public TMP_Dropdown DifficultyDropdown;
+    public TMP_InputField UserNameTMP;
+   
+    [Header(" ")]
     public ScreenState CurrentState = ScreenState.LockScreen;
     public ScreenState OldState = ScreenState.Desktop;
 
 
     private string password = "1234";
     private string typedPassword = "1234";
-
-    // Start is called before the first frame update
+     
+    private void Awake()
+    { 
+        LoadSettings();
+    }
     void Start()
-    {
+    { 
         LockPc(false);
         passwordInputField = LockScreenPanel.GetComponentInChildren<TMP_InputField>();
         typedPassword = passwordInputField.text;
@@ -110,7 +126,7 @@ public class DesktopManager : MonoBehaviour
     #region ActionsMethods
     public void OnClicked_ForgotPassword()
     {
-        string message = "You can't remember your password? \r\nHere is a tip for you: \r\nYour password is most common 4 digit pass in the world";
+        string message = "Can't you remember your password? \r\nHere is a tip for you: \r\nYour password is most common 4 digit password in the world";
         ChatBoxManager.Instance.AIChatBoxTextUpdate(message, displayTime: 7f ,startDelay: 0f); 
     }
     public void OnClicked_LockScreenOk()
@@ -169,8 +185,35 @@ public class DesktopManager : MonoBehaviour
         DesktopIconsDict[button].SetActive(true);
         TaskBarControl.Instance.NewProgramOpen(button.transform.GetChild(0).GetComponent<Image>().sprite, DesktopIconsDict[button]);
     }
+    public void OnClicked_Shutdown()
+    {
+        Debug.Log("Shutdown");
+        ExitGame();
+    }
+    public void OnClicked_StartUpPanel()
+    {
+        StartUpPanel.SetActive(!StartUpPanel.activeInHierarchy);
+        SaveSettings(); 
+
+    }
     #endregion
 
+    public void ExitGame()
+    {
+
+        //TODO: save any game data here
+        if (Application.isEditor)
+        {
+            UnityEditor.EditorApplication.isPlaying = false;
+            Debug.Log("Game in Editor");
+        }
+        else
+        {
+            Application.Quit();
+            Debug.Log("Game is exiting");
+        }
+
+    }
     #region PrivateMethods
     private void UnlockPc()
     {
@@ -183,7 +226,8 @@ public class DesktopManager : MonoBehaviour
         OldState = ScreenState.LockScreen;
         WrongPassTmpText.gameObject.SetActive(false);
     }
-    private void LockPc(bool justForStart=true)
+    #endregion 
+    public void LockPc(bool justForStart=true)
     {
         LockScreenPanel.SetActive(true);
         ScreenPanel.SetActive(true);
@@ -194,5 +238,38 @@ public class DesktopManager : MonoBehaviour
         CurrentState = ScreenState.LockScreen;
         WrongPassTmpText.gameObject.SetActive(false);
     }
-    #endregion                                              
+    public void LoadSettings()
+    {
+        // Load settings using PlayerPrefs and apply them to the game
+        if (PlayerPrefs.HasKey("SoundVolume"))
+        {
+            SoundVolume = PlayerPrefs.GetFloat("SoundVolume");         }
+
+        if (PlayerPrefs.HasKey("Difficulty"))
+        {
+            Difficulty = PlayerPrefs.GetInt("Difficulty"); 
+        }
+
+        if (PlayerPrefs.HasKey("UserName"))
+        {
+            UserName = PlayerPrefs.GetString("UserName"); 
+        }
+        SoundBarSlider.value = SoundVolume;
+        DifficultyDropdown.value = Difficulty;
+        UserNameTMP.text = UserName; 
+        UserNameTmpText.text = UserName;
+
+    }
+    public void SaveSettings()
+    {
+        // Save settings using PlayerPrefs
+        UserName=UserNameTMP.text;
+        SoundVolume = SoundBarSlider.value;
+        Difficulty = DifficultyDropdown.value;
+        PlayerPrefs.SetFloat("SoundVolume", SoundVolume);
+        PlayerPrefs.SetInt("Difficulty", Difficulty);
+        PlayerPrefs.SetString("UserName", UserName);
+
+    }
+
 }
