@@ -3610,6 +3610,10 @@ MonoBehaviour:
   downloadBar: {fileID: 1760208361}
   SetupVirus: {fileID: 1401834330}
   Ransomware: {fileID: 1392919003}
+  textCounter: 0
+  skip: 1
+  startlevel2: {fileID: 70876336}
+  infoFlag: 0
 --- !u!4 &347580153
 Transform:
   m_ObjectHideFlags: 0
@@ -6075,7 +6079,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &729714242
 RectTransform:
   m_ObjectHideFlags: 0

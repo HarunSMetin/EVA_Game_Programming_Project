@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -58,7 +59,13 @@ public class LevelManager : MonoBehaviour
     public Slider downloadBar;
     public Button SetupVirus; 
     public GameObject Ransomware;
-     
+
+
+    [Header("Level 2\n")]
+    public int textCounter = 0; 
+    public bool skip = true;
+    public Button startlevel2;
+    public bool infoFlag;
 
     // Start is called before the first frame update
     void Start()
@@ -90,16 +97,11 @@ public class LevelManager : MonoBehaviour
                 }); 
                 break;
             case Levels.Level2:
-                LevelIcons[0].SetActive(true);
-                LevelIcons[1].SetActive(false);
-                LevelIcons[2].SetActive(false);
                 level1FinishedStates();
 
                 break;
             case Levels.Level3:
-                LevelIcons[0].SetActive(true);
-                LevelIcons[1].SetActive(true);
-                LevelIcons[2].SetActive(false);
+                level3FinishedStates();
                 break; 
         }
     }
@@ -112,15 +114,26 @@ public class LevelManager : MonoBehaviour
         unreadMesagesText.text = "*You Have No Unread Messages";
         mailPanel.SetActive(true);
         inboxButtonText.text = "INBOX";
+        LevelIcons[0].SetActive(true);
+        LevelIcons[1].SetActive(false);
+        LevelIcons[2].SetActive(false);
+        textCounter =0;
     }
     public void level2FinishedStates()
-    { 
-        //TODO: Level2 things which are finished
+    {
+        level1FinishedStates();
+        startlevel2.interactable = false;
+        LevelIcons[0].SetActive(true);
+        LevelIcons[1].SetActive(true);
+        LevelIcons[2].SetActive(false);
     }
-    void level3StartLoad()
+    void level3FinishedStates()
     {
         level1FinishedStates();
         level2FinishedStates();
+        LevelIcons[0].SetActive(true);
+        LevelIcons[1].SetActive(true);
+        LevelIcons[2].SetActive(true);
     } 
     void Update()
     {
@@ -130,7 +143,7 @@ public class LevelManager : MonoBehaviour
 
                 if (!flagOfFirstIntro)
                 {
-                    string message = "Hi, there...\r\nWith newest Update of your OS, I have recently added your screen. \r\nAs you see, I am your AI Assistant.";
+                    string message = "Hi,"+ DesktopManager.Instance.UserName + "...\r\nWith newest Update of your OS, I have recently added your screen. \r\nAs you see, I am your AI Assistant.";
                     ChatBoxManager.Instance.AIChatBoxTextUpdate(message, displayTime:8f, startDelay: 2f); 
                     flagOfFirstIntro=true;
                 }
@@ -148,6 +161,58 @@ public class LevelManager : MonoBehaviour
                 }
                 break;
             case Levels.Level2:
+                if (textCounter==0 && skip)
+                {
+                    skip = false; // when aichatbox is active, skip is false, it finished  ChatBoxManager.Instance.AIChatBoxTextUpdate change skip's value to true again
+                    string message = "Hi again " + DesktopManager.Instance.UserName + ",\r\nYou made it very good, what a smart Human!";
+                    ChatBoxManager.Instance.AIChatBoxTextUpdate(message, displayTime: 5f, startDelay: 2f);
+                    textCounter++;
+                }else if ( skip && textCounter == 1 && DesktopManager.Instance.CurrentState != DesktopManager.ScreenState.LockScreen)
+                {
+                    skip = false;
+                    string message = "But I think, I am not working properly.\r\nWait a second, I should scan my Neural Integrity ";
+                    ChatBoxManager.Instance.AIChatBoxTextUpdate(message, displayTime: 6f, startDelay: 2f);
+                    textCounter++;
+                }
+                else if (skip && textCounter == 2 && DesktopManager.Instance.CurrentState != DesktopManager.ScreenState.LockScreen)
+                {
+                    skip = false;
+                    string message = "Oh no, I have a exploding and vanishing gradients in my Neural NET. \r\nI need to fix it, but I can't do it myself.";
+                    ChatBoxManager.Instance.AIChatBoxTextUpdate(message, displayTime: 7f, startDelay: 2f);
+                    textCounter++;
+                }
+                else if (skip && textCounter == 3 && DesktopManager.Instance.CurrentState != DesktopManager.ScreenState.LockScreen)
+                {
+                    skip = false;
+                    string message = "I need your help " + DesktopManager.Instance.UserName + ", can you help me? \r\n I installed my AI application to your Desktop. Click when you ready";
+                    ChatBoxManager.Instance.AIChatBoxTextUpdate(message, displayTime: 7f, startDelay: 2f);
+                    textCounter++; 
+                }
+                else if (skip && textCounter == 4)
+                {
+                    textCounter++;
+                    LevelIcons[1].SetActive(true);
+                    LevelIcons[1].transform.GetChild(0).GetComponent<Button>().onClick.AddListener(() =>
+                    {
+                        infoFlag=true;
+                    });
+                }
+                else if(skip && infoFlag && textCounter == 5)
+                {
+                    skip = false;
+                    startlevel2.interactable = false;
+                    startlevel2.onClick.AddListener(() =>
+                    {
+                        StartCoroutine(SceneTransition());
+                    });
+                    string message = "Don't forget!!! \r\nRed dots represent my damaged neurons, Greens in good condition";
+                    ChatBoxManager.Instance.AIChatBoxTextUpdate(message, displayTime: 8f, startDelay: 1f);
+                    textCounter++;
+                }
+                
+                else if (skip && infoFlag && textCounter == 6)
+                    startlevel2.interactable = true;
+
                 break;
             case Levels.Level3:
                 break; 
@@ -178,7 +243,7 @@ public class LevelManager : MonoBehaviour
     IEnumerator OnClick_SetupVirus()
     {
         SetupVirus.interactable = false; 
-        ChatBoxManager.Instance.AIChatBoxTextUpdate("OH NO! \r\n \r\nTHIS IS VIRUS", displayTime: 6f, startDelay: 1f);
+        ChatBoxManager.Instance.AIChatBoxTextUpdate("OH NO! \r\n"+ DesktopManager.Instance.UserName.ToUpper() + "\r\nTHIS IS VIRUS", displayTime: 6f, startDelay: 1f);
         float time = 0f;
         while (time < 8f)
         {
@@ -194,18 +259,32 @@ public class LevelManager : MonoBehaviour
             Ransomware.SetActive(false);
             LoadLevel();
         });
-        ChatBoxManager.Instance.AIChatBoxTextUpdate("ARE YOU THERE??? \r\nPRESS TO MY ICON AND LETS CLEAN THIS THING",  startDelay: 5f);
+        ChatBoxManager.Instance.AIChatBoxTextUpdate("ARE YOU THERE "+ DesktopManager.Instance.UserName + "??? \r\nPRESS TO MY ICON AND LETS CLEAN THIS THING",  startDelay: 5f);
  
         
     }
+
+    IEnumerator SceneTransition()
+    { 
+        float time = 0f;
+        while (time < 6f)
+        {
+            time += Time.deltaTime;
+            DesktopManager.Instance.SetGlitch(time / 6f);
+            yield return null;
+        } 
+        LoadLevel();
+    }
     public void LoadLevel()
     {
+        DesktopManager.Instance.SaveSettings();
         switch (CurrentLevel)
         {
             case Levels.Level1:
                 SceneManager.LoadScene("Level1");
                 break;
             case Levels.Level2:
+                
                 SceneManager.LoadScene("Level2");
                 break;
             case Levels.Level3:

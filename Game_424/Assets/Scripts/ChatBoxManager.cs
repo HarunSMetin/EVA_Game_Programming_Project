@@ -42,6 +42,7 @@ public class ChatBoxManager : MonoBehaviour
         AIChatBoxText.text = text;
         AIPanel.SetActive(true); 
         available = true;
+        LevelManager.Instance.skip = true;
     }
     public void AIChatBoxTextUpdate(string text, float startDelay = 1f)
     {
@@ -64,6 +65,7 @@ public class ChatBoxManager : MonoBehaviour
         yield return new WaitForSeconds(startDelay);
         AIPanel.SetActive(true); 
         available = true;
+        LevelManager.Instance.skip = true;
     }
     IEnumerator DisableAIPanel(float startDelay,float displayTime)
     {
@@ -72,5 +74,6 @@ public class ChatBoxManager : MonoBehaviour
         yield return new WaitForSeconds(displayTime);
         AIPanel.SetActive(false);
         available = true;
+        LevelManager.Instance.skip = true;
     }
 }
