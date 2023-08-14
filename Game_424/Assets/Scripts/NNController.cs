@@ -68,8 +68,7 @@ public class NNController : MonoBehaviour
         inputLayerSizeX = inputPerceptrons.Length;
         inputLayerSizeY = inputPerceptrons[0].Length;
         corruptedPerceptron = inputPerceptrons[corruptedX][corruptedY];
-        Material corruptedNeuron = corruptedPerceptron.GetComponent<Renderer>().material;
-        corruptedNeuron  = corruptedMaterial;
+        inputPerceptrons[corruptedX][corruptedY].GetComponent<Renderer>().material = corruptedMaterial;
         //Output Layer
         outputLayer = GameObject.FindWithTag("OutputLayer");
         outputPerceptrons = new GameObject[outputLayer.transform.childCount][];
@@ -123,23 +122,17 @@ public class NNController : MonoBehaviour
         {
             int randomInputX = Random.Range(0, inputLayerSizeX);
             int randomInputY = Random.Range(0, inputLayerSizeY);
-            Debug.Log("Random Input X: " + randomInputX + " Random Input Y: " + randomInputY+" Corrupted X: "+corruptedX+" Corrupted Y: "+corruptedY);
             if (randomInputX == corruptedX && randomInputY == corruptedY)
             {
-                Debug.Log("here");
                 selectedMaterial = corruptedMaterial;
                 AudioSource.Play();
-            }
-            else
-            {
-                selectedMaterial = glowingMaterial;
             }
             blinkingPerceptron = inputPerceptrons[randomInputX][randomInputY];
             ActivePerceptrons.Add(blinkingPerceptron, 0.0f);
             originalMaterial = blinkingPerceptron.GetComponent<Renderer>().material;
 
             Renderer renderer = blinkingPerceptron.GetComponent<Renderer>();
-            renderer.material = glowingMaterial; // Apply the glowing material
+            renderer.material = selectedMaterial; // Apply the glowing material
             renderer.material.EnableKeyword("_EMISSION"); // Enable emission
 
 
@@ -158,7 +151,7 @@ public class NNController : MonoBehaviour
                 originalMaterial = blinkingPerceptron.GetComponent<Renderer>().material;
 
                 Renderer rendererHidden = blinkingPerceptron.GetComponent<Renderer>();
-                rendererHidden.material = glowingMaterial; // Apply the glowing material
+                rendererHidden.material = selectedMaterial; // Apply the glowing material
 
 
             }
@@ -172,7 +165,7 @@ public class NNController : MonoBehaviour
             originalMaterial = blinkingPerceptron.GetComponent<Renderer>().material;
 
             Renderer rendererOut = blinkingPerceptron.GetComponent<Renderer>();
-            rendererOut.material = glowingMaterial; // Apply the glowing material
+            rendererOut.material = selectedMaterial; // Apply the glowing material
             rendererOut.material.EnableKeyword("_EMISSION"); // Enable emission
 
 
