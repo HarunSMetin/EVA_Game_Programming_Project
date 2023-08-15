@@ -217,7 +217,7 @@ public class LevelManager : MonoBehaviour
                 });
                 DesktopManager.Instance.DesktopIcons[6].transform.GetChild(0).GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    string message = "You can use 'start ____' command ";
+                    string message = "You can use: \r\n 'start ____' command ";
                     ChatBoxManager.Instance.AIChatBoxTextUpdate(message, displayTime: 4f, startDelay: 2f);
                 });
                
