@@ -247,7 +247,8 @@ public class DesktopManager : MonoBehaviour
         // Load settings using PlayerPrefs and apply them to the game
         if (PlayerPrefs.HasKey("SoundVolume"))
         {
-            SoundVolume = PlayerPrefs.GetFloat("SoundVolume");         }
+            SoundVolume = PlayerPrefs.GetFloat("SoundVolume");
+        }
 
         if (PlayerPrefs.HasKey("Difficulty"))
         {
