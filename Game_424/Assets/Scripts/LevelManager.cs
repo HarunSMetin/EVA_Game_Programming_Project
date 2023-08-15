@@ -87,13 +87,73 @@ public class LevelManager : MonoBehaviour
     public GameObject ErrorPopup;
     public Button ErrorPopupOK;
 
+    public TMP_InputField       CMDinput1;
+    public GameObject           Header1;
+    public GameObject           correctOutput;
+    public GameObject           errorOutput;
+
+    public GameObject           Header2; 
+    public TMP_InputField       CMDinput2;
+    public GameObject           Header3; 
+    public GameObject           correctOutput2;
+
+    public bool EvaUninstallFlag = false;   
+
     List<GameObject> browseForwardRouteStack = new List<GameObject>();
     List<GameObject> browseBackwardRouteStack = new List<GameObject>();
     GameObject currentBrowserPage;
+
+    void RestartCmd()
+    {
+        EvaUninstallFlag = false;
+        CMDinput1.text = "";
+        CMDinput2.text = "";
+        Header1.SetActive(false);
+        Header2.SetActive(false);
+        Header3.SetActive(false);
+        correctOutput.SetActive(false);
+        correctOutput2.SetActive(false);
+        errorOutput.SetActive(false);
+        CMDinput2.gameObject.SetActive(false);
+    }   
     // Start is called before the first frame update
     void Start()
     {
+        RestartCmd();
         CurrentLevel = (Levels)DesktopManager.Instance.level;
+
+        CMDinput1.onEndEdit.AddListener((string s) =>
+        {
+            if (s.ToLower().Contains("EVA_Uninstall".ToLower()))
+            {
+                Header1.SetActive(true);
+                correctOutput.SetActive(true);
+                errorOutput.SetActive(false);
+                EvaUninstallFlag = true; 
+                CMDinput2.gameObject.SetActive(false);
+            }
+            else
+            {
+                Header1.SetActive(true);
+                errorOutput.SetActive(true);
+                Header2.SetActive(true);
+                CMDinput2.gameObject.SetActive(true);
+            }
+        });
+        CMDinput2.onEndEdit.AddListener((string s) =>
+        {
+            if (s.ToLower().Contains("EVA_Uninstall".ToLower())) 
+            {
+                Header3.SetActive(true);
+                correctOutput2.SetActive(true);
+                EvaUninstallFlag = true;
+            }
+            else
+            {
+                Header3.SetActive(false);
+                CMDinput2.text = "";
+            }
+        });
         switch (CurrentLevel)
         {
             case Levels.Level1:
@@ -155,6 +215,12 @@ public class LevelManager : MonoBehaviour
                 {
                     infoFlag = true;
                 });
+                DesktopManager.Instance.DesktopIcons[6].transform.GetChild(0).GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    string message = "You can use 'start ____' command ";
+                    ChatBoxManager.Instance.AIChatBoxTextUpdate(message, displayTime: 4f, startDelay: 2f);
+                });
+               
                 break;
         }
     }
@@ -186,7 +252,8 @@ public class LevelManager : MonoBehaviour
         level2FinishedStates();
         LevelIcons[0].SetActive(true);
         LevelIcons[1].SetActive(true);
-        LevelIcons[2].SetActive(true);
+        LevelIcons[2].SetActive(true); 
+        RestartCmd();
     }
     void Update()
     {
@@ -301,6 +368,10 @@ public class LevelManager : MonoBehaviour
                     string message = "Search For EVA UNINSTALLER";
                     ChatBoxManager.Instance.AIChatBoxTextUpdate(message, displayTime: 4f, startDelay: 2f);
                     textCounter++;
+                } 
+                else if (skip && EvaUninstallFlag &&textCounter == 4)
+                {
+                    StartCoroutine(SceneTransition());
                 }
                 break;
         }
@@ -416,7 +487,7 @@ public class LevelManager : MonoBehaviour
                 SceneManager.LoadScene("Level2");
                 break;
             case Levels.Level3:
-                SceneManager.LoadScene("Level3");
+                SceneManager.LoadScene("Final");
                 break;
         }
     }
