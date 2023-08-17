@@ -10,6 +10,8 @@ TagManager:
   - InputLayer
   - HiddenLayer
   - OutputLayer
+  - BlackBox
+  - Perceptron
   layers:
   - Default
   - TransparentFX
