@@ -29,6 +29,7 @@ public class InputManager : MonoBehaviour
     }
 
     public bool OK = false;      
+    public bool OK_UP = false;
     public bool lockKey = false;
 
     // Start is called before the first frame update
@@ -40,12 +41,14 @@ public class InputManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        OK_UP = false;
         if (Input.GetKeyDown(KeyCode.Return)|| Input.GetKeyDown(KeyCode.KeypadEnter))
             OK = true; 
         if (Input.GetKeyUp(KeyCode.Return) || Input.GetKeyUp(KeyCode.KeypadEnter))
             OK = false;
 
-
+        if (Input.GetKeyUp(KeyCode.Return) || Input.GetKeyUp(KeyCode.KeypadEnter))
+            OK_UP = true;
         if (Input.GetKey(KeyCode.RightControl) || Input.GetKey(KeyCode.LeftControl))
         {
             if (Input.GetKeyDown(KeyCode.L))
