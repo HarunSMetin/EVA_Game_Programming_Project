@@ -8,9 +8,9 @@ using UnityEngine.UI;
 [RequireComponent(typeof(LineRenderer))]
 public class RayCastGun : MonoBehaviour
 {
-    /*public GameObject TemperatureBar;
+    public GameObject TemperatureBar;
     public GameObject BatteryBar;
-    public GameObject EnergyBar;*/
+    public GameObject EnergyBar;
     public int selectedGun = 0;
 
     // Public variables for customization
@@ -55,16 +55,17 @@ public class RayCastGun : MonoBehaviour
     public float averageHitDistance = 0f;
 
 
-    private void Start()
+    private void Awake()
     {
         currentBattery = GetBatteryCapacityValue(batteryCapacity);
         laserLine = GetComponent<LineRenderer>();
         initialLaserWidth = 0.01f;
-        /*BatteryBar = GameObject.FindWithTag("BatteryBar");
+
+        BatteryBar = GameObject.FindWithTag("BatteryBar");
+        TemperatureBar = GameObject.FindWithTag("TemparatureBar");
         EnergyBar = GameObject.FindWithTag("EnergyBar");
-        TemperatureBar = GameObject.FindWithTag("TemparatureBar");*/
-        //hitText = GameObject.Find("HitText").GetComponent<TextMeshProUGUI>();
-        //hitText.text = "";
+        hitText = GameObject.Find("HitText").GetComponent<TextMeshProUGUI>();
+        hitText.text = "";
 
     }
 
@@ -81,7 +82,11 @@ public class RayCastGun : MonoBehaviour
                 StartCoroutine(EnergyLoading());
             }
         }
-
+        if (Input.GetButtonDown("Reload") )
+        {
+            BatteryBar.GetComponent<Slider>().value = 1;
+            currentBattery = GetBatteryCapacityValue(batteryCapacity);
+        }
         if (Input.GetButtonUp("Fire1"))
         {
             isFiring = false;
@@ -97,7 +102,7 @@ public class RayCastGun : MonoBehaviour
         {
             currentTemperature = Mathf.Max(currentTemperature - (Time.deltaTime * (50f / coolingDuration)), minTemperature);
         }
-        //TemperatureBar.GetComponent<Slider>().value = (currentTemperature - minTemperature) / (maxTemperature - minTemperature);
+        TemperatureBar.GetComponent<Slider>().value = (currentTemperature - minTemperature) / (maxTemperature - minTemperature);
 
         gameDuration = GetGameDuration();
     }
@@ -123,7 +128,7 @@ public class RayCastGun : MonoBehaviour
                 break;
             }
             float normalizedEnergy = Mathf.Log(loadedEnergy / 100) / Mathf.Log(2f) / 5;
-            //EnergyBar.GetComponent<Slider>().value = normalizedEnergy;
+            EnergyBar.GetComponent<Slider>().value = normalizedEnergy;
 
             float width = Mathf.Lerp(startWidth, targetWidth, elapsedTime / energyLoadingDuration);
             laserLine.startWidth = width;
@@ -135,7 +140,7 @@ public class RayCastGun : MonoBehaviour
                 laserLine.endWidth = 0.5f;
 
                 elapsedTime = 0f;
-                //EnergyBar.GetComponent<Slider>().value = 0;
+                EnergyBar.GetComponent<Slider>().value = 0;
 
                 laserLine.startWidth = initialLaserWidth;
                 laserLine.endWidth = initialLaserWidth;
@@ -154,7 +159,7 @@ public class RayCastGun : MonoBehaviour
             Shoot();
 
         elapsedTime = 0f;
-        //EnergyBar.GetComponent<Slider>().value = 0;
+        EnergyBar.GetComponent<Slider>().value = 0;
 
         // The coroutine will only reach this point if !isFiring
         laserLine.startWidth = initialLaserWidth;
@@ -172,7 +177,7 @@ public class RayCastGun : MonoBehaviour
         {
 
             currentBattery -= usedEnergy;
-            //BatteryBar.GetComponent<Slider>().value = currentBattery / GetBatteryCapacityValue(batteryCapacity);
+            BatteryBar.GetComponent<Slider>().value = currentBattery / GetBatteryCapacityValue(batteryCapacity);
             currentTemperature += usedEnergy / 10f;
             currentTemperature = Mathf.Min(currentTemperature, maxTemperature);
 
@@ -180,7 +185,7 @@ public class RayCastGun : MonoBehaviour
         }
         else
         {
-            //hitText.text = "Not enough battery";
+            hitText.text = "Not enough battery";
 
         }
 
@@ -207,7 +212,7 @@ public class RayCastGun : MonoBehaviour
                 averageHitDistance = (averageHitDistance * (hitShots - 1) + distance_to_target) / hitShots;
 
                 float firePower = CalculateFirePower(loadedEnergy, distance_to_target);
-                //hitText.text = "Hit";
+                hitText.text = "Hit";
 
                 laserLine.SetPosition(0, laserOrigin.position);
                 laserLine.SetPosition(1, hit.point);
@@ -254,7 +259,7 @@ public class RayCastGun : MonoBehaviour
     {
         laserLine.enabled = true;
         yield return new WaitForSeconds(laserDuration);
-        //hitText.text = "";
+        hitText.text = "";
         laserLine.enabled = false;
     }
 
