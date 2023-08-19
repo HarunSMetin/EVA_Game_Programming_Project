@@ -3,7 +3,20 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - NeuralNetwork
+  - Layers
+  - Row
+  - InputLayer
+  - HiddenLayer
+  - OutputLayer
+  - BlackBox
+  - Perceptron
+  - EnergyBar
+  - HealthBar
+  - TemparatureBar
+  - BatteryBar
+  - CorruptedNeuron
   layers:
   - Default
   - TransparentFX
@@ -40,4 +53,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Icon
+    uniqueID: 3385298051
+    locked: 0
+  - name: Background
+    uniqueID: 1882459683
     locked: 0
