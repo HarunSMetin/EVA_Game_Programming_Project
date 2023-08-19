@@ -12,6 +12,11 @@ TagManager:
   - OutputLayer
   - BlackBox
   - Perceptron
+  - EnergyBar
+  - HealthBar
+  - TemparatureBar
+  - BatteryBar
+  - CorruptedNeuron
   layers:
   - Default
   - TransparentFX
