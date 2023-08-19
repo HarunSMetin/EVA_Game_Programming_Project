@@ -14,17 +14,16 @@ public class BoxMovement : MonoBehaviour
                                              cubes[3].transform.position == trueOrderCubes[3].transform.position)
         {
             Debug.Log("true order");
-            door[0].transform.position = new Vector3(door[0].transform.position.x, door[0].transform.position.y, door[0].transform.position.z - 3);
-            door[1].transform.position = new Vector3(door[1].transform.position.x, door[1].transform.position.y, door[0].transform.position.z + 3);
+            //delete door[0] and door[1]
+            Destroy(door[0]);
+            Destroy(door[1]);
         }
     }
 
     public void OnButtonPressed(int index)
     {
-        Debug.Log("xx " + index + " pressed");
         if (index == 0)
         {
-            Debug.Log("aaa " + index + " pressed");
             Vector3 temp = cubes[0].transform.position;
             cubes[0].transform.position = cubes[1].transform.position;
             cubes[1].transform.position = temp;
