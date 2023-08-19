@@ -36,7 +36,7 @@ public class RayCastInformation : MonoBehaviour
 
     }
 
-    private void Update()
+    private void Update()   
     {
        
         
