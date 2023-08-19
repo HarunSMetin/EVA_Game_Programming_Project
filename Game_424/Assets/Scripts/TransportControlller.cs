@@ -20,7 +20,7 @@ public class TransportControlller : MonoBehaviour
         float distance = Vector3.Distance(corruptedNeuron.transform.position, Player.transform.position);
         if(distance < 5f)
         {
-            if (Input.GetButtonDown("Hold"))
+            if (Input.GetButtonUp("Hold"))
             {
                 if (isHolding)
                 {

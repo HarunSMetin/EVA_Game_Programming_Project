@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Level2Controlller : MonoBehaviour
+public class Level2Controller : MonoBehaviour
 {
     // Start is called before the first frame update
 
@@ -13,9 +13,9 @@ public class Level2Controlller : MonoBehaviour
             if (Input.GetButtonDown("SkipLevel"))
             {
 
-            PlayerPrefs.Save();
+                PlayerPrefs.Save();
 
-        }
+            }
 
     }
 }

@@ -29,7 +29,12 @@ public class FinishAndReturnDesktop : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(FinishedFlag)
+        if (Input.GetButtonUp("SkipLevel"))
+        {
+            FinishedFlag = true;
+
+        }
+        if (FinishedFlag)
         { 
             FinishedFlag = false;
             StartCoroutine(SceneTransition());
@@ -68,4 +73,11 @@ public class FinishAndReturnDesktop : MonoBehaviour
         }
         SceneManager.LoadScene("Desktop");
     }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == "Player")
+        {
+            FinishedFlag = true;
+        }
+    }   
 }
