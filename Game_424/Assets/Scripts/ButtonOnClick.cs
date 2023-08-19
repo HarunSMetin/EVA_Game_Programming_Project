@@ -13,7 +13,7 @@ public class ButtonOnClick : MonoBehaviour
     {
         if (other.gameObject.tag == "Player")
         {
-            if (Input.GetKeyDown(KeyCode.E))
+            if (Input.GetKeyUp(KeyCode.E))
             {
                 Debug.Log("Button " + sphereTag + " pressed");
                 boxMovement.OnButtonPressed(sphereTag);

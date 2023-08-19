@@ -42,12 +42,13 @@ public class BoxMovement : MonoBehaviour
         }
         else if (index == 2)
         {
-            Vector3 temp = cubes[2].transform.position;
-            cubes[2].transform.position = cubes[3].transform.position;
-            cubes[3].transform.position = temp;
             GameObject temp2 = cubes[2];
             cubes[2] = cubes[3];
             cubes[3] = temp2;
+            Vector3 temp = cubes[2].transform.position;
+            cubes[2].transform.position = cubes[3].transform.position;
+            cubes[3].transform.position = temp;
+            
         }
         
         IsCubesTrueOrder();
